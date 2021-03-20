@@ -14,8 +14,9 @@
     "schema": "db/schema.prisma"
   },
   "prettier": {
-    "semi": false,
-    "printWidth": 100
+    "semi": true,
+    "printWidth": 100,
+    "tabWidth": 2
   },
   "husky": {
     "hooks": {
@@ -29,27 +30,55 @@
     ]
   },
   "dependencies": {
-    "prisma": "~2.17",
+    "@fullstory/browser": "1.4.9",
     "@prisma/client": "~2.17",
+    "@sentry/fullstory": "1.1.5",
+    "@sentry/integrations": "6.2.3",
+    "@sentry/node": "6.2.3",
+    "@sentry/react": "6.2.3",
+    "@sentry/tracing": "6.2.3",
+    "@sentry/types": "6.2.3",
     "blitz": "0.32.1",
+    "d3": "3",
+    "final-form": "4.20.2",
+    "graphology": "0.19.3",
+    "graphology-types": "0.19.2",
+    "neo4j-driver": "4.2.3",
+    "notion-client": "4.3.2",
+    "notion-types": "4.3.0",
+    "notion-utils": "4.3.0",
+    "prisma": "~2.17",
     "react": "0.0.0-experimental-3310209d0",
     "react-dom": "0.0.0-experimental-3310209d0",
     "react-error-boundary": "3.1.1",
+    "react-final-form": "6.5.2",
+    "styled-components": "5.2.1",
+    "tslog": "3.1.2",
     "typescript": "~4.1",
-    "zod": "1.11.11",
-    "final-form": "4.20.2",
-    "react-final-form": "6.5.2"
+    "universal-logger": "1.0.1",
+    "universal-logger-browser": "1.0.2",
+    "zod": "1.11.11"
   },
   "devDependencies": {
-    "@types/react": "17.0.3",
+    "@types/d3": "^3",
     "@types/preview-email": "2.0.0",
+    "@types/react": "17.0.3",
     "eslint": "7.22.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-config-react-app": "5.2.1",
+    "eslint-plugin-flowtype": "4.7.0",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-prettier": "3.1.3",
+    "eslint-plugin-quick-prettier": "0.0.28",
+    "eslint-plugin-react": "7.19.0",
+    "eslint-plugin-react-hooks": "4.0.1",
+    "eslint-plugin-simple-import-sort": "5.0.3",
     "husky": "4.3.8",
     "lint-staged": "10.5.4",
     "prettier": "2.2.1",
+    "prettier-plugin-prisma": "0.5.1",
     "pretty-quick": "3.1.0",
-    "preview-email": "3.0.3",
-    "prettier-plugin-prisma": "0.5.1"
+    "preview-email": "3.0.3"
   },
   "private": true
 }
