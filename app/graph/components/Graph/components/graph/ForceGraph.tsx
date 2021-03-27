@@ -5,11 +5,14 @@ import { drag as d3Drag } from 'd3-drag';
 import { forceLink as d3ForceLink } from 'd3-force';
 import { event as d3Event, select as d3Select, selectAll as d3SelectAll } from 'd3-selection';
 import { zoom as d3Zoom } from 'd3-zoom';
+import { setState } from 'expect/build/jestMatchersObject';
 import React from 'react';
 
 import { PageLink, PageNode } from '../../../../entities';
 import ERRORS from '../../err';
+import { ContextMenuState } from '../../Graph.types';
 import { debounce, merge, throwErr } from '../../utils';
+import { NodeContextMenu } from '../NodeContextMenu';
 
 import {
   getTargetLeafConnections,
@@ -32,15 +35,18 @@ import { renderGraph } from './graph.renderer';
 interface ForceGraphProps {
   id: string;
   data: {
-    nodes: PageNode;
-    links: PageLink;
+    nodes: PageNode[];
+    links: PageLink[];
+    focusedNodeId?: string;
   };
+  config?: any;
 }
 
 interface ForceGraphState {
   enableFocusAnimation?: boolean;
   config?: any;
   focusTransformation?: any;
+  contextMenu?: ContextMenuState;
 }
 
 export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState> {
@@ -191,10 +197,11 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
    * @param  {boolean} [value=false] - the highlight value to be set (true or false).
    * @returns {undefined}
    */
-  _setNodeHighlightedValue = (id, value = false) =>
+  _setNodeHighlightedValue = (id, value = false) => {
     this._tick(
       updateNodeHighlightedValue(this.state.nodes, this.state.links, this.state.config, id, value)
     );
+  };
 
   /**
    * The tick function simply calls React set state in order to update component and render nodes
@@ -259,6 +266,8 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
    * @returns {undefined}
    */
   onClickGraph = (e) => {
+    this.closeContextMenu();
+
     if (this.state.enableFocusAnimation) {
       this.setState({ enableFocusAnimation: false });
     }
@@ -275,71 +284,84 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     }
   };
 
+  toggleNodeCollapsed = (nodeId: string) => {
+    const leafConnections = getTargetLeafConnections(nodeId, this.state.links, this.state.config);
+    const links = toggleLinksMatrixConnections(
+      this.state.links,
+      leafConnections,
+      this.state.config
+    );
+    const d3Links = toggleLinksConnections(this.state.d3Links, links);
+    const firstLeaf = leafConnections?.['0'];
+
+    let isExpanding = false;
+
+    if (firstLeaf) {
+      const visibility = links[firstLeaf.source][firstLeaf.target];
+
+      isExpanding = visibility === 1;
+    }
+
+    this._tick(
+      {
+        links,
+        d3Links
+      },
+      () => {
+        if (isExpanding) {
+          this._graphNodeDragConfig();
+        }
+      }
+    );
+  };
+
   /**
    * Collapses the nodes, then checks if the click is doubled and calls the callback passed to the component.
    * @param  {string} clickedNodeId - The id of the node where the click was performed.
    * @returns {undefined}
    */
   onClickNode = (clickedNodeId) => {
+    if (this.state.contextMenu?.node?.id !== clickedNodeId) {
+      this.closeContextMenu();
+    }
+
     const clickedNode = this.state.nodes[clickedNodeId];
 
-    if (this.state.config.collapsible) {
-      const leafConnections = getTargetLeafConnections(
-        clickedNodeId,
-        this.state.links,
-        this.state.config
-      );
-      const links = toggleLinksMatrixConnections(
-        this.state.links,
-        leafConnections,
-        this.state.config
-      );
-      const d3Links = toggleLinksConnections(this.state.d3Links, links);
-      const firstLeaf = leafConnections?.['0'];
-
-      let isExpanding = false;
-
-      if (firstLeaf) {
-        const visibility = links[firstLeaf.source][firstLeaf.target];
-
-        isExpanding = visibility === 1;
-      }
-
-      this._tick(
-        {
-          links,
-          d3Links
-        },
-        () => {
-          this.props.onClickNode && this.props.onClickNode(clickedNodeId, clickedNode);
-
-          if (isExpanding) {
-            this._graphNodeDragConfig();
-          }
-        }
-      );
+    if (!this.nodeClickTimer) {
+      this.nodeClickTimer = setTimeout(() => {
+        this.props.onClickNode && this.props.onClickNode(clickedNodeId, clickedNode);
+        this.nodeClickTimer = null;
+      }, CONST.TTL_DOUBLE_CLICK_IN_MS);
     } else {
-      if (!this.nodeClickTimer) {
-        this.nodeClickTimer = setTimeout(() => {
-          this.props.onClickNode && this.props.onClickNode(clickedNodeId, clickedNode);
-          this.nodeClickTimer = null;
-        }, CONST.TTL_DOUBLE_CLICK_IN_MS);
-      } else {
-        this.props.onDoubleClickNode && this.props.onDoubleClickNode(clickedNodeId, clickedNode);
-        this.nodeClickTimer = clearTimeout(this.nodeClickTimer);
-      }
+      this.props.onDoubleClickNode && this.props.onDoubleClickNode(clickedNodeId, clickedNode);
+      this.nodeClickTimer = clearTimeout(this.nodeClickTimer);
     }
   };
 
-  /**
-   * Handles right click event on a node.
-   * @param  {Object} event - Right click event.
-   * @param  {string} id - id of the node that participates in the event.
-   * @returns {undefined}
-   */
+  closeContextMenu = () => {
+    this._setNodeHighlightedValue(this.state.contextMenu?.node?.id, false);
+
+    this.setState({
+      contextMenu: null
+    });
+  };
+
   onRightClickNode = (event, id) => {
-    const clickedNode = this.state.nodes[id];
-    this.props.onRightClickNode && this.props.onRightClickNode(event, id, clickedNode);
+    event.preventDefault();
+
+    const node = this.state.nodes[id];
+
+    const rect = event.target.getBoundingClientRect();
+
+    this.setState({
+      contextMenu: {
+        top: event.clientY,
+        left: event.clientX,
+        height: rect.height,
+        width: rect.width,
+        node
+      }
+    });
   };
 
   /**
@@ -352,10 +374,10 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
       return;
     }
 
-    const clickedNode = this.state.nodes[id];
-    this.props.onMouseOverNode && this.props.onMouseOverNode(id, clickedNode);
+    const hoveredNode = this.state.nodes[id];
+    this.props.onMouseOverNode && this.props.onMouseOverNode(id, hoveredNode);
 
-    this.state.config.nodeHighlightBehavior && this._setNodeHighlightedValue(id, true);
+    this._setNodeHighlightedValue(id, true);
   };
 
   /**
@@ -371,7 +393,11 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     const clickedNode = this.state.nodes[id];
     this.props.onMouseOutNode && this.props.onMouseOutNode(id, clickedNode);
 
-    this.state.config.nodeHighlightBehavior && this._setNodeHighlightedValue(id, false);
+    if (this.state.contextMenu?.node?.id === id) {
+      return;
+    }
+
+    this._setNodeHighlightedValue(id, false);
   };
 
   /**
@@ -608,7 +634,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         onMouseOutLink: this.onMouseOutLink
       },
       this.state.config,
-      this.state.highlightedNode,
+      this.state.contextMenu?.node?.id ?? this.state.highlightedNode,
       this.state.highlightedLink,
       this.state.transform.k
     );
@@ -621,6 +647,8 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
 
     const containerProps = this._generateFocusAnimationProps();
 
+    const { contextMenu } = this.state;
+
     return (
       <div id={`${this.state.id}-${CONST.GRAPH_WRAPPER_ID}`}>
         <svg name={`svg-container-${this.state.id}`} style={svgStyle} onClick={this.onClickGraph}>
@@ -630,6 +658,13 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
             {nodes}
           </g>
         </svg>
+        {contextMenu && (
+          <NodeContextMenu
+            onClose={this.closeContextMenu}
+            toggleNodeCollapsed={this.toggleNodeCollapsed}
+            {...(contextMenu ?? {})}
+          />
+        )}
       </div>
     );
   }

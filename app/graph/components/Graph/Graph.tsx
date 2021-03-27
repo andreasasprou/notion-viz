@@ -1,9 +1,9 @@
-import { useWindowSize } from "@react-hook/window-size/throttled";
-import React from "react";
+import { useWindowSize } from '@react-hook/window-size/throttled';
+import React, { useMemo } from 'react';
 
-import { PageLink, PageNode } from "../../entities";
+import { PageLink, PageNode } from '../../entities';
 
-import { ForceGraph } from "./components";
+import { ForceGraph } from './components';
 
 interface GraphProps {
   nodes: PageNode[];
@@ -11,34 +11,29 @@ interface GraphProps {
 }
 
 export function Graph({ nodes, links }: GraphProps) {
-  const data = {
-    nodes,
-    links,
-  };
-
   const [width, height] = useWindowSize();
 
   // the graph configuration, just override the ones you need
-  const myConfig = {
-    width,
-    height,
-  };
+  const myConfig = useMemo(
+    () => ({
+      width,
+      height
+    }),
+    [height, width]
+  );
 
-  const onClickNode = function (nodeId) {
-    console.log(`Clicked node ${nodeId}`);
-  };
-
-  const onClickLink = function (source, target) {
-    console.log(`Clicked link between ${source} and ${target}`);
-  };
+  const data = useMemo(
+    () => ({
+      nodes,
+      links,
+      focusedNodeId: nodes.find((node) => node.focused)
+    }),
+    [links, nodes]
+  );
 
   return (
-    <ForceGraph
-      id="graph-id" // id is mandatory
-      data={data}
-      config={myConfig}
-      onClickNode={onClickNode}
-      onClickLink={onClickLink}
-    />
+    <>
+      <ForceGraph id="graph-id" data={data} config={myConfig} />
+    </>
   );
 }

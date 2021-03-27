@@ -20,12 +20,13 @@
     "tsBuildInfoFile": ".tsbuildinfo",
     "paths": {
       "db": ["db/index.ts"],
-      "@/ui/*": ["app/components/*"],
       "@/graph/*": ["app/graph/*"],
+      "@/ui/*": ["app/ui/*"],
       "@/constants/*": ["utils/constants/*"],
       "@/logger": ["utils/logger/index.ts"],
       "@/hooks/*": ["utils/hooks/*"],
       "@/shared": ["utils/shared/index.ts"],
+      "@/types": ["utils/types/index.ts"],
       "@/utils/*": ["utils/*"]
     }
   },

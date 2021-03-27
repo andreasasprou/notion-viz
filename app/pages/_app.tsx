@@ -1,3 +1,6 @@
+// eslint-disable-next-line simple-import-sort/sort
+import 'tailwindcss/tailwind.css';
+
 import LoginForm from 'app/auth/components/LoginForm';
 import {
   AppProps,

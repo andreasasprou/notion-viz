@@ -103,6 +103,9 @@ module.exports = {
     'scripts/*',
     'polyfills.js',
     'cypress/**/*.js',
+    'postcss.config.js',
+    '.eslintrc.js',
+    'tailwind.config.js',
     'db/**/*.js'
   ]
 };

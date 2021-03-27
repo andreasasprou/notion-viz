@@ -1,8 +1,6 @@
 import { Block } from 'notion-types';
 
-export function getPageIdFromBlockIdAndTitle({ title, id }: { id: string; title: string }) {
-  `${title.replace(/ /g, '-')}-${id.replace(/-/g, '')}`;
-}
+import { getPageIdFromBlockIdAndTitle } from '../../notion';
 
 export function getPageAttributesFromBlock(block: Block) {
   if (!block.properties?.title || block.type !== 'page') {

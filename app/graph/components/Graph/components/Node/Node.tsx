@@ -1,12 +1,12 @@
-import React, { memo, ReactNode, useState } from "react";
+import React, { memo, ReactNode, useState } from 'react';
 
-import { Logger } from "@/logger";
+import { Logger } from '@/logger';
 
-import { PageNode } from "../../../../entities";
-import { GraphSymbol } from "../../const";
+import { PageNode } from '../../../../entities';
+import { GraphSymbol } from '../../const';
 
-import CONST from "./node.const";
-import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from "./node.helper";
+import CONST from './node.const';
+import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from './node.helper';
 
 interface NodeProps extends PageNode {
   onMouseOverNode?: (nodeId: string) => void;
@@ -50,7 +50,7 @@ export const Node = memo(function ({
   cx,
   size: size_,
   title,
-  labelHidden = false,
+  labelHidden = false
 }: NodeProps) {
   /**
    * Handle click on the node.
@@ -84,7 +84,7 @@ export const Node = memo(function ({
     onContextMenu: handleOnRightClickNode,
     onMouseOut: handleOnMouseOutNode,
     onMouseOver: handleOnMouseOverNode,
-    transition: "opacity 0.2s ease",
+    transition: 'opacity 0.2s ease'
   };
 
   const textProps = {
@@ -92,8 +92,7 @@ export const Node = memo(function ({
     fill: fontColor,
     fontSize: fontSize,
     fontWeight: fontWeight,
-    opacity: labelHidden ? 0 : opacity,
-    transition: "font-size, opacity 0.2s ease",
+    opacity: labelHidden ? 0 : opacity
   };
 
   let size = size_;
@@ -106,7 +105,7 @@ export const Node = memo(function ({
   const gty = cy;
 
   if (!isSizeNumericalValue) {
-    Logger.warn("node.size should be a number when not using custom nodes.");
+    Logger.warn('node.size should be a number when not using custom nodes.');
     size = CONST.DEFAULT_NODE_SIZE;
   }
 
@@ -116,14 +115,18 @@ export const Node = memo(function ({
   nodeProps.opacity = opacity;
   nodeProps.strokeWidth = strokeWidth;
 
-  label = <text {...textProps}>{label}</text>;
-  node = <path {...nodeProps} />;
+  label = (
+    <text className="transition duration-150 ease-in-out" {...textProps}>
+      {label}
+    </text>
+  );
+  node = <path className="transition duration-150 ease-in-out" {...nodeProps} />;
 
   const gProps = {
     cx: cx,
     cy: cy,
     id: id,
-    transform: `translate(${gtx},${gty})`,
+    transform: `translate(${gtx},${gty})`
   };
 
   return (
