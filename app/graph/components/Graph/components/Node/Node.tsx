@@ -1,12 +1,12 @@
-import React, { memo, ReactNode, useState } from 'react';
+import React, { memo, ReactNode, useState } from "react";
 
-import { Logger } from '@/logger';
+import { Logger } from "@/logger";
 
-import { PageNode } from '../../../../entities';
-import { GraphSymbol } from '../../const';
+import { PageNode } from "../../../../entities";
+import { GraphSymbol } from "../../const";
 
-import CONST from './node.const';
-import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from './node.helper';
+import CONST from "./node.const";
+import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from "./node.helper";
 
 interface NodeProps extends PageNode {
   onMouseOverNode?: (nodeId: string) => void;
@@ -27,8 +27,7 @@ interface NodeProps extends PageNode {
   fill?: string;
   stroke?: string;
   strokeWidth?: number;
-  viewGenerator?: any;
-  svg?: any;
+  labelHidden?: boolean;
 }
 
 export const Node = memo(function ({
@@ -47,22 +46,18 @@ export const Node = memo(function ({
   fill,
   stroke,
   strokeWidth,
-  viewGenerator,
-  svg,
   cy,
   cx,
   size: size_,
-  title
+  title,
+  labelHidden = false,
 }: NodeProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-
   /**
    * Handle click on the node.
    * @returns {undefined}
    */
   const handleOnClickNode = () => {
     onClickNode && onClickNode(id);
-    setIsOpen(true);
   };
 
   /**
@@ -88,7 +83,8 @@ export const Node = memo(function ({
     onClick: handleOnClickNode,
     onContextMenu: handleOnRightClickNode,
     onMouseOut: handleOnMouseOutNode,
-    onMouseOver: handleOnMouseOverNode
+    onMouseOver: handleOnMouseOverNode,
+    transition: "opacity 0.2s ease",
   };
 
   const textProps = {
@@ -96,7 +92,8 @@ export const Node = memo(function ({
     fill: fontColor,
     fontSize: fontSize,
     fontWeight: fontWeight,
-    opacity: opacity
+    opacity: labelHidden ? 0 : opacity,
+    transition: "font-size, opacity 0.2s ease",
   };
 
   let size = size_;
@@ -105,45 +102,28 @@ export const Node = memo(function ({
   let node: ReactNode = <></>;
   let label: ReactNode = <>{title}</>;
 
-  let gtx = cx,
-    gty = cy;
+  const gtx = cx;
+  const gty = cy;
 
-  if (svg || viewGenerator) {
-    const height = isSizeNumericalValue ? (size as number) / 10 : (size as NodeSize).height / 10;
-    const width = isSizeNumericalValue ? (size as number) / 10 : (size as NodeSize).width / 10;
-    const tx = width / 2;
-    const ty = height / 2;
-    const transform = `translate(${tx},${ty})`;
-
-    label = (
-      <text {...textProps} transform={transform}>
-        {label}
-      </text>
-    );
-
-    // svg offset transform regarding svg width/height
-    gtx -= tx;
-    gty -= ty;
-  } else {
-    if (!isSizeNumericalValue) {
-      Logger.warn('node.size should be a number when not using custom nodes.');
-      size = CONST.DEFAULT_NODE_SIZE;
-    }
-
-    nodeProps.d = buildSvgSymbol(size, type);
-    nodeProps.fill = fill;
-    nodeProps.stroke = stroke;
-    nodeProps.strokeWidth = strokeWidth;
-
-    label = <text {...textProps}>{label}</text>;
-    node = <path {...nodeProps} />;
+  if (!isSizeNumericalValue) {
+    Logger.warn("node.size should be a number when not using custom nodes.");
+    size = CONST.DEFAULT_NODE_SIZE;
   }
+
+  nodeProps.d = buildSvgSymbol(size, type);
+  nodeProps.fill = fill;
+  nodeProps.stroke = stroke;
+  nodeProps.opacity = opacity;
+  nodeProps.strokeWidth = strokeWidth;
+
+  label = <text {...textProps}>{label}</text>;
+  node = <path {...nodeProps} />;
 
   const gProps = {
     cx: cx,
     cy: cy,
     id: id,
-    transform: `translate(${gtx},${gty})`
+    transform: `translate(${gtx},${gty})`,
   };
 
   return (

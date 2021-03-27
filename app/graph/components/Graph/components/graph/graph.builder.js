@@ -3,11 +3,11 @@
  * @description
  * Offers a series of methods that isolate the way graph elements are built (nodes and links mainly).
  */
-import CONST from "./graph.const";
 import { isNil } from "../../utils";
-
 import { buildLinkPathDefinition } from "../link/link.helper";
 import { getMarkerId } from "../marker/marker.helper";
+
+import CONST from "./graph.const";
 import { getNormalizedNodeCoordinates } from "./graph.helper";
 
 /**
@@ -53,7 +53,16 @@ function _getNodeOpacity(node, highlightedNode, highlightedLink, config) {
  * @returns {Object} returns an object that aggregates all props for creating respective Link component instance.
  * @memberof Graph/builder
  */
-function buildLinkProps(link, nodes, links, config, linkCallbacks, highlightedNode, highlightedLink, transform) {
+function buildLinkProps(
+  link,
+  nodes,
+  links,
+  config,
+  linkCallbacks,
+  highlightedNode,
+  highlightedLink,
+  transform
+) {
   const { source, target } = link;
   let x1 = nodes?.[source]?.x || 0;
   let y1 = nodes?.[source]?.y || 0;
@@ -79,7 +88,8 @@ function buildLinkProps(link, nodes, links, config, linkCallbacks, highlightedNo
 
   const guiltyNode = mainNodeParticipates && nodes[source].highlighted && nodes[target].highlighted;
   const guiltyLink =
-    source === (highlightedLink && highlightedLink.source) && target === (highlightedLink && highlightedLink.target);
+    source === (highlightedLink && highlightedLink.source) &&
+    target === (highlightedLink && highlightedLink.target);
   const highlight = guiltyNode || guiltyLink;
 
   let opacity = link.opacity || config.link.opacity;
@@ -91,7 +101,10 @@ function buildLinkProps(link, nodes, links, config, linkCallbacks, highlightedNo
   let stroke = link.color || config.link.color;
 
   if (highlight) {
-    stroke = config.link.highlightColor === CONST.KEYWORDS.SAME ? config.link.color : config.link.highlightColor;
+    stroke =
+      config.link.highlightColor === CONST.KEYWORDS.SAME
+        ? config.link.color
+        : config.link.highlightColor;
   }
 
   const strokeDasharray = link.strokeDasharray || config.link.strokeDasharray;
@@ -128,7 +141,12 @@ function buildLinkProps(link, nodes, links, config, linkCallbacks, highlightedNo
   }
 
   const { sourceCoords, targetCoords } = getNormalizedNodeCoordinates(
-    { sourceId: source, targetId: target, sourceCoords: { x: x1, y: y1 }, targetCoords: { x: x2, y: y2 } },
+    {
+      sourceId: source,
+      targetId: target,
+      sourceCoords: { x: x1, y: y1 },
+      targetCoords: { x: x2, y: y2 },
+    },
     nodes,
     config,
     strokeWidth
@@ -179,7 +197,14 @@ function buildLinkProps(link, nodes, links, config, linkCallbacks, highlightedNo
  * @returns {Object} returns object that contain Link props ready to be feeded to the Link component.
  * @memberof Graph/builder
  */
-function buildNodeProps(node, config, nodeCallbacks = {}, highlightedNode, highlightedLink, transform) {
+function buildNodeProps(
+  node,
+  config,
+  nodeCallbacks = {},
+  highlightedNode,
+  highlightedLink,
+  transform
+) {
   const highlight =
     node.highlighted ||
     node.id === (highlightedLink && highlightedLink.source) ||
@@ -238,6 +263,7 @@ function buildNodeProps(node, config, nodeCallbacks = {}, highlightedNode, highl
   }
 
   var labelClass = config.node.labelClass;
+
   if (!isNil(node.labelClass) && typeof node.labelClass === "string") {
     labelClass = node.labelClass;
   }
@@ -251,7 +277,7 @@ function buildNodeProps(node, config, nodeCallbacks = {}, highlightedNode, highl
     dx,
     fill,
     fontColor,
-    fontSize: finalFontSize * t,
+    fontSize: Math.max(finalFontSize * t, config.node.minFontSize),
     fontWeight: highlight ? config.node.highlightFontWeight : config.node.fontWeight,
     id: node.id,
     label,
@@ -260,7 +286,10 @@ function buildNodeProps(node, config, nodeCallbacks = {}, highlightedNode, highl
     overrideGlobalViewGenerator: !node.viewGenerator && node.svg,
     renderLabel,
     labelClass,
-    size: isSizeNumericValue ? nodeSize * t : { height: nodeSize.height * t, width: nodeSize.width * t },
+    labelHidden: transform < config.node.hideLabelOnMinZoom,
+    size: isSizeNumericValue
+      ? nodeSize * t
+      : { height: nodeSize.height * t, width: nodeSize.width * t },
     stroke,
     strokeWidth: strokeWidth * t,
     svg,
