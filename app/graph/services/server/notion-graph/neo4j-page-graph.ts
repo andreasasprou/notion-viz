@@ -3,7 +3,7 @@ import { Driver } from 'neo4j-driver/types/driver';
 
 import { ServerConstants } from '@/constants/server';
 
-import { PageNode } from '../../../entities';
+import { PageLink, PageNode } from '../../../entities';
 
 export interface Graph {
   getNode(id: string): Promise<PageNode | undefined>;
@@ -34,50 +34,32 @@ export class Neo4jGraph implements Graph {
       `
       );
 
-      const relationships: {
-        id: string;
-        startNodeId: string;
-        endNodeId: string;
-        type: string;
-        properties?: any;
-        labels: string[];
-      }[] = [];
-      const nodes: {
-        id: string;
-        properties: PageNode;
-        labels: string[];
-      }[] = [];
+      const links: PageLink[] = [];
+      const nodes: PageNode[] = [];
 
       result.records.forEach((record) => {
         const n1 = record.get(0).properties;
         const rel = record.get(1);
         const n2 = record.get(2).properties;
 
-        relationships.push({
+        links.push({
           id: rel.identity.low,
-          startNodeId: n1.id,
-          endNodeId: n2.id,
-          type: 'References',
-          properties: {},
-          labels: []
+          source: n1.id,
+          target: n2.id
         });
 
         const newNodes = [n1, n2];
 
         newNodes.forEach((newNode) => {
           if (!nodes.map((node) => node.id).includes(newNode.id)) {
-            nodes.push({
-              id: newNode.id,
-              properties: newNode,
-              labels: []
-            });
+            nodes.push(newNode);
           }
         });
       });
 
       return {
         nodes,
-        relationships
+        links
       };
     } finally {
       await session.close();

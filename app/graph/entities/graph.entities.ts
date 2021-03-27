@@ -3,3 +3,9 @@ export interface PageNode {
   title: string;
   hasProcessedPage?: boolean;
 }
+
+export interface PageLink {
+  id: string;
+  source: string;
+  target: string;
+}

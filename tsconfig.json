@@ -21,11 +21,12 @@
     "paths": {
       "db": ["db/index.ts"],
       "@/ui/*": ["app/components/*"],
+      "@/graph/*": ["app/graph/*"],
       "@/constants/*": ["utils/constants/*"],
       "@/logger": ["utils/logger/index.ts"],
+      "@/hooks/*": ["utils/hooks/*"],
       "@/shared": ["utils/shared/index.ts"],
-      "@/graph/*": ["app/graph/*"],
-      "@/utils/*": ["utils/*"],
+      "@/utils/*": ["utils/*"]
     }
   },
   "exclude": ["node_modules", "**/*.e2e.ts", "cypress"],

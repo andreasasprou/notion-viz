@@ -1,18 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { Explorer, StyledVisContainer } from '../../components/D3Visualization';
+import { Graph } from '../../components/Graph';
+import { PageLink, PageNode } from '../../entities';
 import { Neo4jGraph } from '../../services/server/notion-graph/neo4j-page-graph';
 
-const updateStyle = (style) =>
-  console.log({
-    style
-  });
-
-const getNeighbours = async (nodeId, currentNeighborids) => {
-  return [];
-};
-
-function GraphPage({ nodes, relationships }: { nodes: any[]; relationships: any[] }) {
+function GraphPage({ nodes, links }: { nodes: PageNode[]; links: PageLink[] }) {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -23,28 +15,14 @@ function GraphPage({ nodes, relationships }: { nodes: any[]; relationships: any[
     return <div></div>;
   }
 
-  return (
-    <StyledVisContainer fullscreen={true}>
-      <Explorer
-        maxNeighbours={10}
-        hasTruncatedFields={false}
-        initialNodeDisplay={300}
-        updateStyle={updateStyle}
-        getNeighbours={getNeighbours}
-        nodes={nodes}
-        relationships={relationships}
-        fullscreen={true}
-        frameHeight={472}
-      />
-    </StyledVisContainer>
-  );
+  return <Graph nodes={nodes} links={links} />;
 }
 
 export async function getServerSideProps() {
-  const { nodes, relationships } = await new Neo4jGraph().getGraph();
+  const { nodes, links } = await new Neo4jGraph().getGraph();
 
   return {
-    props: { nodes, relationships }
+    props: { nodes, links }
   };
 }
 
