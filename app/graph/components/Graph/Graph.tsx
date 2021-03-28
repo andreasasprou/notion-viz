@@ -26,7 +26,7 @@ export function Graph({ nodes, links }: GraphProps) {
     () => ({
       nodes,
       links,
-      focusedNodeId: nodes.find((node) => node.focused)
+      focusedNodeId: nodes.find((node) => node.focused)?.id
     }),
     [links, nodes]
   );

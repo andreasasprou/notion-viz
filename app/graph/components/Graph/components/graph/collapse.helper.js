@@ -5,8 +5,9 @@
  * create the collapsible behavior. These functions will most likely operate on
  * the links matrix.
  */
-import { getId } from "./graph.helper";
-import { logError } from "../../utils";
+import { logError } from '../../utils';
+
+import { getId } from './graph.helper';
 
 /**
  * For directed graphs.
@@ -80,7 +81,7 @@ function computeNodeDegree(nodeId, linksMatrix = {}) {
     },
     {
       inDegree: 0,
-      outDegree: 0,
+      outDegree: 0
     }
   );
 }
@@ -98,13 +99,15 @@ function computeNodeDegree(nodeId, linksMatrix = {}) {
  * @memberof Graph/collapse-helper
  */
 function getTargetLeafConnections(rootNodeId, linksMatrix = {}, { directed }) {
-  const rootConnectionsNodesIds = linksMatrix[rootNodeId] ? Object.keys(linksMatrix[rootNodeId]) : [];
+  const rootConnectionsNodesIds = linksMatrix[rootNodeId]
+    ? Object.keys(linksMatrix[rootNodeId])
+    : [];
 
   return rootConnectionsNodesIds.reduce((leafConnections, target) => {
     if (_isLeaf(target, linksMatrix, directed)) {
       leafConnections.push({
         source: rootNodeId,
-        target,
+        target
       });
     }
 
@@ -129,15 +132,16 @@ function isNodeVisible(nodeId, nodes, linksMatrix) {
   const node = nodes[nodeId];
 
   if (!node) {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       logError(
-        "graph/collapse.helper",
+        'graph/collapse.helper',
         `Trying to check if node ${nodeId} is visible but its not present in nodes: `,
         nodes
       );
     }
     return false;
   }
+
   if (nodes[nodeId]._orphan) {
     return true;
   }
@@ -155,12 +159,13 @@ function isNodeVisible(nodeId, nodes, linksMatrix) {
  * @memberof Graph/collapse-helper
  */
 function toggleLinksConnections(d3Links, connectionMatrix) {
-  return d3Links.map(d3Link => {
+  return d3Links.map((d3Link) => {
     const { source, target } = d3Link;
     const sourceId = getId(source);
     const targetId = getId(target);
     // connectionMatrix[sourceId][targetId] can be 0 or non existent
-    const connection = connectionMatrix && connectionMatrix[sourceId] && connectionMatrix[sourceId][targetId];
+    const connection =
+      connectionMatrix && connectionMatrix[sourceId] && connectionMatrix[sourceId][targetId];
     const isHidden = !connection;
 
     return { ...d3Link, isHidden };
@@ -207,5 +212,5 @@ export {
   getTargetLeafConnections,
   isNodeVisible,
   toggleLinksConnections,
-  toggleLinksMatrixConnections,
+  toggleLinksMatrixConnections
 };

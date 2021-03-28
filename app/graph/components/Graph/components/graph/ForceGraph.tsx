@@ -16,6 +16,7 @@ import { NodeContextMenu } from '../NodeContextMenu';
 
 import {
   getTargetLeafConnections,
+  isNodeVisible,
   toggleLinksConnections,
   toggleLinksMatrixConnections
 } from './collapse.helper';
@@ -282,6 +283,10 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     if (tagName.toUpperCase() === 'SVG' && name === svgContainerName) {
       this.props.onClickGraph && this.props.onClickGraph(e);
     }
+  };
+
+  isNodeVisible = (nodeId: string) => {
+    return isNodeVisible(nodeId, this.state.nodes, this.state.links);
   };
 
   toggleNodeCollapsed = (nodeId: string) => {
@@ -662,7 +667,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
           <NodeContextMenu
             onClose={this.closeContextMenu}
             toggleNodeCollapsed={this.toggleNodeCollapsed}
-            {...(contextMenu ?? {})}
+            {...contextMenu}
           />
         )}
       </div>
