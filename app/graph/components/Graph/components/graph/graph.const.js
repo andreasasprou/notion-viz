@@ -1,6 +1,6 @@
 import CONST from "../../const";
 
-export default {
+const GRAPH_CONSTANTS = {
   COORDS_SEPARATOR: ",",
   FORCE_X: 0.06,
   FORCE_Y: 0.06,
@@ -14,3 +14,5 @@ export default {
   TTL_DOUBLE_CLICK_IN_MS: 300,
   ...CONST,
 };
+
+export default GRAPH_CONSTANTS;

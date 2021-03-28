@@ -3,15 +3,16 @@
  * @description
  * Offers a series of methods to compute proper markers within a given context.
  */
+import CONST from "../graph/graph.const";
+
 import {
+  HIGHLIGHTED,
+  MARKER_LARGE_OFFSET,
+  MARKER_MEDIUM_OFFSET,
+  MARKER_SMALL_SIZE,
   MARKERS,
   SIZES,
-  HIGHLIGHTED,
-  MARKER_SMALL_SIZE,
-  MARKER_MEDIUM_OFFSET,
-  MARKER_LARGE_OFFSET,
 } from "./marker.const";
-import CONST from "../graph/graph.const";
 
 /**
  * This function is a key template builder to access MARKERS structure.

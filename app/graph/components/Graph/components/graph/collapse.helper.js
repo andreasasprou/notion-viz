@@ -5,9 +5,11 @@
  * create the collapsible behavior. These functions will most likely operate on
  * the links matrix.
  */
-import { logError } from '../../utils';
+import { ClientConstants } from "@/constants/client";
 
-import { getId } from './graph.helper';
+import { logError } from "../../utils";
+
+import { getId } from "./graph.helper";
 
 /**
  * For directed graphs.
@@ -81,7 +83,7 @@ function computeNodeDegree(nodeId, linksMatrix = {}) {
     },
     {
       inDegree: 0,
-      outDegree: 0
+      outDegree: 0,
     }
   );
 }
@@ -107,7 +109,7 @@ function getTargetLeafConnections(rootNodeId, linksMatrix = {}, { directed }) {
     if (_isLeaf(target, linksMatrix, directed)) {
       leafConnections.push({
         source: rootNodeId,
-        target
+        target,
       });
     }
 
@@ -132,9 +134,9 @@ function isNodeVisible(nodeId, nodes, linksMatrix) {
   const node = nodes[nodeId];
 
   if (!node) {
-    if (process.env.NODE_ENV === 'development') {
+    if (ClientConstants.isDev) {
       logError(
-        'graph/collapse.helper',
+        "graph/collapse.helper",
         `Trying to check if node ${nodeId} is visible but its not present in nodes: `,
         nodes
       );
@@ -212,5 +214,5 @@ export {
   getTargetLeafConnections,
   isNodeVisible,
   toggleLinksConnections,
-  toggleLinksMatrixConnections
+  toggleLinksMatrixConnections,
 };

@@ -1,27 +1,26 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import { drag as d3Drag } from 'd3-drag';
-import { forceLink as d3ForceLink } from 'd3-force';
-import { event as d3Event, select as d3Select, selectAll as d3SelectAll } from 'd3-selection';
-import { zoom as d3Zoom } from 'd3-zoom';
-import { setState } from 'expect/build/jestMatchersObject';
-import React from 'react';
+import { drag as d3Drag } from "d3-drag";
+import { forceLink as d3ForceLink } from "d3-force";
+import { event as d3Event, select as d3Select, selectAll as d3SelectAll } from "d3-selection";
+import { zoom as d3Zoom } from "d3-zoom";
+import React from "react";
 
-import { PageLink, PageNode } from '../../../../entities';
-import ERRORS from '../../err';
-import { ContextMenuState } from '../../Graph.types';
-import { debounce, merge, throwErr } from '../../utils';
-import { NodeContextMenu } from '../NodeContextMenu';
+import { PageLink, PageNode } from "../../../../entities";
+import ERRORS from "../../err";
+import { ContextMenuState } from "../../Graph.types";
+import { debounce, merge, throwErr } from "../../utils";
+import { NodeContextMenu } from "../NodeContextMenu";
 
 import {
   getTargetLeafConnections,
   isNodeVisible,
   toggleLinksConnections,
-  toggleLinksMatrixConnections
-} from './collapse.helper';
-import DEFAULT_CONFIG from './graph.config';
-import CONST from './graph.const';
+  toggleLinksMatrixConnections,
+} from "./collapse.helper";
+import DEFAULT_CONFIG from "./graph.config";
+import CONST from "./graph.const";
 import {
   checkForGraphConfigChanges,
   checkForGraphElementsChanges,
@@ -29,9 +28,9 @@ import {
   initializeGraphState,
   initializeNodes,
   isPositionInBounds,
-  updateNodeHighlightedValue
-} from './graph.helper';
-import { renderGraph } from './graph.renderer';
+  updateNodeHighlightedValue,
+} from "./graph.helper";
+import { renderGraph } from "./graph.renderer";
 
 interface ForceGraphProps {
   id: string;
@@ -78,7 +77,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
 
     return {
       style: { transitionDuration: `${transitionDuration}s` },
-      transform: this.state.focusTransformation
+      transform: this.state.focusTransformation,
     };
   };
 
@@ -103,11 +102,11 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
    */
   _graphNodeDragConfig() {
     const customNodeDrag = d3Drag()
-      .on('start', this._onDragStart)
-      .on('drag', this._onDragMove)
-      .on('end', this._onDragEnd);
+      .on("start", this._onDragStart)
+      .on("drag", this._onDragMove)
+      .on("end", this._onDragEnd);
 
-    d3Select(`#${this.state.id}-${CONST.GRAPH_WRAPPER_ID}`).selectAll('.node').call(customNodeDrag);
+    d3Select(`#${this.state.id}-${CONST.GRAPH_WRAPPER_ID}`).selectAll(".node").call(customNodeDrag);
   }
 
   /**
@@ -117,7 +116,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
    */
   _graphBindD3ToReactComponent() {
     if (!this.state.config.d3.disableLinkForce) {
-      this.state.simulation.nodes(this.state.d3Nodes).on('tick', this._tick);
+      this.state.simulation.nodes(this.state.d3Nodes).on("tick", this._tick);
       this._graphLinkForceConfig();
     }
     if (!this.state.config.freezeAllDragEvents) {
@@ -171,8 +170,8 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         draggedNode.y = newY;
 
         // set nodes fixing coords fx and fy
-        draggedNode['fx'] = draggedNode.x;
-        draggedNode['fy'] = draggedNode.y;
+        draggedNode["fx"] = draggedNode.x;
+        draggedNode["fy"] = draggedNode.y;
 
         this._tick({ draggedNode });
       }
@@ -227,7 +226,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     const zoomObject = d3Zoom().scaleExtent([this.state.config.minZoom, this.state.config.maxZoom]);
 
     if (!this.state.config.freezeAllDragEvents) {
-      zoomObject.on('zoom', this._zoomed);
+      zoomObject.on("zoom", this._zoomed);
     }
 
     if (this.state.config.initialZoom !== null) {
@@ -236,7 +235,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
 
     // avoid double click on graph to trigger zoom
     // for more details consult: https://github.com/danielcaldas/react-d3-graph/pull/202
-    selector.call(zoomObject).on('dblclick.zoom', null);
+    selector.call(zoomObject).on("dblclick.zoom", null);
   };
 
   /**
@@ -246,7 +245,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
   _zoomed = () => {
     const transform = d3Event.transform;
 
-    d3SelectAll(`#${this.state.id}-${CONST.GRAPH_CONTAINER_ID}`).attr('transform', transform);
+    d3SelectAll(`#${this.state.id}-${CONST.GRAPH_CONTAINER_ID}`).attr("transform", transform);
 
     this.setState({ transform });
 
@@ -280,7 +279,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     const name = e?.target?.attributes?.name?.value;
     const svgContainerName = `svg-container-${this.state.id}`;
 
-    if (tagName.toUpperCase() === 'SVG' && name === svgContainerName) {
+    if (tagName.toUpperCase() === "SVG" && name === svgContainerName) {
       this.props.onClickGraph && this.props.onClickGraph(e);
     }
   };
@@ -297,7 +296,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
       this.state.config
     );
     const d3Links = toggleLinksConnections(this.state.d3Links, links);
-    const firstLeaf = leafConnections?.['0'];
+    const firstLeaf = leafConnections?.["0"];
 
     let isExpanding = false;
 
@@ -310,7 +309,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     this._tick(
       {
         links,
-        d3Links
+        d3Links,
       },
       () => {
         if (isExpanding) {
@@ -347,7 +346,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     this._setNodeHighlightedValue(this.state.contextMenu?.node?.id, false);
 
     this.setState({
-      contextMenu: null
+      contextMenu: null,
     });
   };
 
@@ -364,8 +363,8 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         left: event.clientX,
         height: rect.height,
         width: rect.width,
-        node
-      }
+        node,
+      },
     });
   };
 
@@ -472,8 +471,8 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         const node = this.state.nodes[nodeId];
 
         if (node.fx && node.fy) {
-          Reflect.deleteProperty(node, 'fx');
-          Reflect.deleteProperty(node, 'fy');
+          Reflect.deleteProperty(node, "fx");
+          Reflect.deleteProperty(node, "fy");
         }
 
         if (nodeId in initialNodesState) {
@@ -563,7 +562,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
       transform,
       focusedNodeId,
       enableFocusAnimation,
-      focusTransformation
+      focusTransformation,
     });
   }
 
@@ -628,7 +627,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         onDoubleClickNode: this.onDoubleClickNode,
         onRightClickNode: this.onRightClickNode,
         onMouseOverNode: this.onMouseOverNode,
-        onMouseOut: this.onMouseOutNode
+        onMouseOut: this.onMouseOutNode,
       },
       this.state.d3Links,
       this.state.links,
@@ -636,7 +635,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
         onClickLink: this.props.onClickLink,
         onRightClickLink: this.props.onRightClickLink,
         onMouseOverLink: this.onMouseOverLink,
-        onMouseOutLink: this.onMouseOutLink
+        onMouseOutLink: this.onMouseOutLink,
       },
       this.state.config,
       this.state.contextMenu?.node?.id ?? this.state.highlightedNode,
@@ -647,7 +646,7 @@ export class ForceGraph extends React.Component<ForceGraphProps, ForceGraphState
     const svgStyle = {
       height: this.state.config.height,
       width: this.state.config.width,
-      backgroundColor: '#111827'
+      backgroundColor: "#111827",
     };
 
     const containerProps = this._generateFocusAnimationProps();

@@ -1,4 +1,4 @@
-import { disposables, once } from '@/shared';
+import { disposables, once } from "@/shared";
 
 function addClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.add(...classes);
@@ -9,8 +9,8 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
 }
 
 export enum Reason {
-  Finished = 'finished',
-  Cancelled = 'cancelled'
+  Finished = "finished",
+  Cancelled = "cancelled",
 }
 
 function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
@@ -23,11 +23,11 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
 
   const [durationMs, delaysMs] = [transitionDuration, transitionDelay].map((value) => {
     const [resolvedValue = 0] = value
-      .split(',')
+      .split(",")
       // Remove falseys we can't work with
       .filter(Boolean)
       // Values are returned as `0.3s` or `75ms`
-      .map((v) => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))
+      .map((v) => (v.includes("ms") ? parseFloat(v) : parseFloat(v) * 1000))
       .sort((a, z) => z - a);
 
     return resolvedValue;
@@ -62,6 +62,7 @@ export function transition(
   done?: (reason: Reason) => void
 ) {
   const d = disposables();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const _done = done !== undefined ? once(done) : () => {};
 
   addClasses(node, ...base, ...from);

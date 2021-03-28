@@ -1,8 +1,6 @@
 class StringUtils {
   static isValidBoolean(value: string | boolean): boolean {
-    return (
-      value === 'true' || value === 'false' || value === true || value === false
-    );
+    return value === "true" || value === "false" || value === true || value === false;
   }
 
   static isValidInteger(value: string): boolean {
@@ -29,7 +27,7 @@ class StringUtils {
   }
 
   private static convertStringToBoolean(value: string) {
-    return value === 'true';
+    return value === "true";
   }
 }
 
