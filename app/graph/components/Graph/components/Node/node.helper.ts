@@ -11,12 +11,12 @@ import {
   symbolSquare as d3SymbolSquare,
   symbolStar as d3SymbolStar,
   symbolTriangle as d3SymbolTriangle,
-  symbolWye as d3SymbolWye
-} from 'd3-shape';
+  symbolWye as d3SymbolWye,
+} from "d3-shape";
 
-import { GraphSymbol } from '../../const';
+import { GraphSymbol } from "../../const";
 
-import NODE_CONST from './node.const';
+import NODE_CONST from "./node.const";
 
 /**
  * Converts a string that specifies a symbol into a concrete instance
@@ -62,7 +62,7 @@ export interface NodeSize {
 }
 
 export function buildSvgSymbol(
-  size: NodeSize | number = NODE_CONST.DEFAULT_NODE_SIZE,
+  size: number = NODE_CONST.DEFAULT_NODE_SIZE,
   symbolTypeDesc: GraphSymbol = NODE_CONST.SYMBOLS.CIRCLE as GraphSymbol
 ) {
   return d3Symbol()
@@ -79,49 +79,49 @@ export function buildSvgSymbol(
  * @memberof Node/helper
  */
 
-export type LabelPosition = 'right' | 'left' | 'top' | 'bottom' | 'center';
+export type LabelPosition = "right" | "left" | "top" | "bottom" | "center";
 
 export function getLabelPlacementProps(dx: number, labelPosition?: LabelPosition) {
   switch (labelPosition) {
-    case 'right':
+    case "right":
       return {
         dx: dx ? `${dx}` : NODE_CONST.NODE_LABEL_DX,
-        dy: '0',
-        dominantBaseline: 'middle',
-        textAnchor: 'start'
+        dy: "0",
+        dominantBaseline: "middle",
+        textAnchor: "start",
       };
-    case 'left':
+    case "left":
       return {
         dx: dx ? `${-dx}` : `-${NODE_CONST.NODE_LABEL_DX}`,
-        dy: '0',
-        dominantBaseline: 'middle',
-        textAnchor: 'end'
+        dy: "0",
+        dominantBaseline: "middle",
+        textAnchor: "end",
       };
-    case 'top':
+    case "top":
       return {
-        dx: '0',
+        dx: "0",
         dy: dx ? `${-dx}` : `-${NODE_CONST.NODE_LABEL_DX}`,
-        dominantBaseline: 'baseline',
-        textAnchor: 'middle'
+        dominantBaseline: "baseline",
+        textAnchor: "middle",
       };
-    case 'bottom':
+    case "bottom":
       return {
-        dx: '0',
+        dx: "0",
         dy: dx ? `${dx}` : NODE_CONST.NODE_LABEL_DX,
-        dominantBaseline: 'hanging',
-        textAnchor: 'middle'
+        dominantBaseline: "hanging",
+        textAnchor: "middle",
       };
-    case 'center':
+    case "center":
       return {
-        dx: '0',
-        dy: '0',
-        dominantBaseline: 'middle',
-        textAnchor: 'middle'
+        dx: "0",
+        dy: "0",
+        dominantBaseline: "middle",
+        textAnchor: "middle",
       };
     default:
       return {
         dx: dx ? `${dx}` : NODE_CONST.NODE_LABEL_DX,
-        dy: NODE_CONST.NODE_LABEL_DY
+        dy: NODE_CONST.NODE_LABEL_DY,
       };
   }
 }

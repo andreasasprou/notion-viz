@@ -1,12 +1,12 @@
-import React, { memo, ReactNode, useState } from 'react';
+import React, { memo, ReactNode, useState } from "react";
 
-import { Logger } from '@/logger';
+import { Logger } from "@/logger";
 
-import { PageNode } from '../../../../entities';
-import { GraphSymbol } from '../../const';
+import { PageNode } from "../../../../entities";
+import { GraphSymbol } from "../../const";
 
-import CONST from './node.const';
-import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from './node.helper';
+import CONST from "./node.const";
+import { buildSvgSymbol, getLabelPlacementProps, LabelPosition, NodeSize } from "./node.helper";
 
 interface NodeProps extends PageNode {
   onMouseOverNode?: (nodeId: string) => void;
@@ -18,7 +18,7 @@ interface NodeProps extends PageNode {
   dx: number;
   cy: number;
   cx: number;
-  size: NodeSize | number;
+  size: number;
   fontColor;
   fontSize;
   fontWeight;
@@ -48,9 +48,9 @@ export const Node = memo(function ({
   strokeWidth,
   cy,
   cx,
-  size: size_,
+  size,
   title,
-  labelHidden = false
+  labelHidden = false,
 }: NodeProps) {
   /**
    * Handle click on the node.
@@ -84,7 +84,7 @@ export const Node = memo(function ({
     onContextMenu: handleOnRightClickNode,
     onMouseOut: handleOnMouseOutNode,
     onMouseOver: handleOnMouseOverNode,
-    transition: 'opacity 0.2s ease'
+    transition: "opacity 0.2s ease",
   };
 
   const textProps = {
@@ -92,22 +92,14 @@ export const Node = memo(function ({
     fill: fontColor,
     fontSize: fontSize,
     fontWeight: fontWeight,
-    opacity: labelHidden ? 0 : opacity
+    opacity: labelHidden ? 0 : opacity,
   };
-
-  let size = size_;
-  const isSizeNumericalValue = typeof size;
 
   let node: ReactNode = <></>;
   let label: ReactNode = <>{title}</>;
 
   const gtx = cx;
   const gty = cy;
-
-  if (!isSizeNumericalValue) {
-    Logger.warn('node.size should be a number when not using custom nodes.');
-    size = CONST.DEFAULT_NODE_SIZE;
-  }
 
   nodeProps.d = buildSvgSymbol(size, type);
   nodeProps.fill = fill;
@@ -126,7 +118,7 @@ export const Node = memo(function ({
     cx: cx,
     cy: cy,
     id: id,
-    transform: `translate(${gtx},${gty})`
+    transform: `translate(${gtx},${gty})`,
   };
 
   return (

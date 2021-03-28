@@ -1,8 +1,9 @@
-const { sessionMiddleware, simpleRolesIsAuthorized } = require("blitz")
+const { sessionMiddleware, simpleRolesIsAuthorized } = require("blitz");
 
-const sentryConfig = require('./sentry.config');
+const sentryConfig = require("./sentry.config");
 
 module.exports = {
+  productionBrowserSourceMaps: true,
   middleware: [
     sessionMiddleware({
       isAuthorized: simpleRolesIsAuthorized,
@@ -13,15 +14,15 @@ module.exports = {
 
     config.node = {
       ...config.node,
-      child_process: 'empty',
-      fs: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      dns: 'empty',
-      dgram: 'empty',
-      module: 'empty',
+      child_process: "empty",
+      fs: "empty",
+      net: "empty",
+      tls: "empty",
+      dns: "empty",
+      dgram: "empty",
+      module: "empty",
     };
 
     return sentryConfig(config, options);
   },
-}
+};
