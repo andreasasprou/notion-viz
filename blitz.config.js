@@ -9,6 +9,15 @@ module.exports = {
       isAuthorized: simpleRolesIsAuthorized,
     }),
   ],
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/graph",
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, options) => {
     const { buildId, dev, isServer, defaultLoaders, webpack } = options;
 
