@@ -111,7 +111,9 @@ function buildLinkProps(
   const strokeDashoffset = link.strokeDashoffset || config.link.strokeDashoffset;
   const strokeLinecap = link.strokeLinecap || config.link.strokeLinecap;
 
-  let strokeWidth = (link.strokeWidth || config.link.strokeWidth) * (1 / transform);
+  const t = Math.min(1 / transform, config.maxZoomTransform);
+
+  let strokeWidth = (link.strokeWidth || config.link.strokeWidth) * t;
 
   if (config.link.semanticStrokeWidth) {
     const linkValue = links[source][target] || links[target][source] || 1;
@@ -120,8 +122,6 @@ function buildLinkProps(
   }
 
   const markerId = config.directed ? getMarkerId(highlight, transform, config) : null;
-
-  const t = 1 / transform;
 
   let fontSize = null,
     fontColor = null,
@@ -235,7 +235,7 @@ function buildNodeProps(
     strokeWidth = config.node.highlightStrokeWidth;
   }
 
-  const t = 1 / transform;
+  const t = Math.min(1 / transform, config.maxZoomTransform);
   const nodeSize = node.size || config.node.size;
 
   const isSizeNumericValue = typeof nodeSize !== "object";
@@ -287,9 +287,7 @@ function buildNodeProps(
     renderLabel,
     labelClass,
     labelHidden: transform < config.node.hideLabelOnMinZoom,
-    size: isSizeNumericValue
-      ? nodeSize * t
-      : { height: nodeSize.height * t, width: nodeSize.width * t },
+    size: nodeSize * t,
     stroke,
     strokeWidth: strokeWidth * t,
     svg,
